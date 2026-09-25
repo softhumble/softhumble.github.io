@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>GoobyOS | C-Based Microkernel</title>
+    <style>
+        :root {
+            --bg: #dfe5f0;
+            --accent: #0b2545;       /* Dark Navy Blue for accents/headings */
+            --text: #1e293b;         /* Dark gray/black for main text */
+            --dim: #64748b;          /* Medium gray for subtle text */
+            --card: #ffffff;         /* White background for table/cards */
+            --terminal-green: #00ff41;
+            --terminal-red: #ff3333;
+         }
+
+        * { box-sizing: border-box; transition: all 0.2s ease; scroll-behavior: smooth; }
+        body { 
+           background: radial-gradient(circle at center top, #8a94a6 0%, #dfe5f0 100%); 
+           color: var(--text); 
+           font-family: 'Inter', sans-serif; 
+           margin: 0; 
+           padding-bottom: 40px; 
+        }
+        nav { display: flex; justify-content: space-between; padding: 30px 10%; position: absolute; width: 100%; z-index: 10; }
+        .logo { font-family: monospace; font-weight: bold; color: var(--accent); }
+
+        header {
+            height: 90vh; display: flex; flex-direction: column; align-items: center; justify-content: center;
+            text-align: center; background: transparent;
+            padding: 0 20px;
+        }
+
+        h1 { font-size: clamp(2.5rem, 8vw, 4rem); margin: 0; font-weight: 800; }
+        h1 span { color: var(--accent); }
+
+        .btn-group { display: flex; gap: 15px; margin-top: 30px; flex-wrap: wrap; justify-content: center; }
+        .btn { padding: 12px 30px; font-weight: bold; cursor: pointer; border-radius: 4px; font-family: monospace; text-decoration: none; border: 1px solid var(--accent); display: inline-block; }
+        .btn-primary { background: var(--accent); color: #000; }
+        .btn-secondary { background: transparent; color: var(--accent); }
+        .btn-outline { border-color: var(--dim); color: var(--dim); }
+        .btn-outline:hover { border-color: var(--accent); color: var(--accent); }
+
+        .section-title { text-align: center; margin: 60px 0 30px; font-family: monospace; color: var(--accent); }
+        .table-container { padding: 0 10%; display: flex; justify-content: center; }
+        table { width: 100%; max-width: 800px; border-collapse: collapse; background: #ffffff; border: 1px solid #222; }
+        th, td { padding: 15px; text-align: left; border-bottom: 1px solid ffffff; font-size: 0.9rem; }
+        th { color: #00f2ff; font-family: monospace; }
+
+        #download { padding: 80px 10%; text-align: center; }
+        .iso-card { border: 2px dashed #333; padding: 40px; display: inline-block; border-radius: 20px; }
+
+        .contributors { padding: 60px 10%; text-align: center; color: var(--dim); font-size: 0.8rem; }
+
+        #term { position: fixed; inset: 0; background: #000; z-index: 100; display: none; padding: 40px 20px; font-family: monospace; overflow-y: auto; }
+        .log-green { color: var(--terminal-green); }
+        .log-red { color: var(--terminal-red); }
+        .log-white { color: #fff; }
+        .log-dim { color: var(--dim); }
+        
+        .close-term { position: absolute; top: 20px; right: 20px; background: transparent; border: 1px solid #333; color: var(--dim); padding: 5px 15px; cursor: pointer; font-family: monospace; z-index: 110; }
+        .close-term:hover { color: #fff; border-color: var(--accent); }
+
+        .term-btn-group { display: flex; gap: 15px; margin: 15px 0; flex-wrap: wrap; }
+        .term-btn { background: #111; border: 1px solid var(--terminal-green); color: var(--terminal-green); padding: 10px 20px; cursor: pointer; font-family: monospace; font-size: 0.9rem; border-radius: 4px; }
+        .term-btn:hover { background: var(--terminal-green); color: #000; }
+    </style>
+</head>
+<body>
+
+<nav>
+    <div class="logo">GoobyOS_ASM</div>
+    <div style="font-family: monospace;">[ ARCH: i386 ]</div>
+</nav>
+
+<header>
+    <h1>Pure Assembly. <span>Zero Bloat.</span></h1>
+    <p style="color: var(--dim); max-width: 500px; margin: 20px 0;">A hobbyist-grade operating system written in ANSI C and Assembly. No standard library, just raw hardware control.</p>
+    <div class="btn-group">
+        <button class="btn btn-primary" onclick="checkCompatibility(false)">Check My Device</button>
+        <button class="btn btn-outline" onclick="checkCompatibility(true)">Simulate PC Check</button>
+        <a href="https://github.com/softhumble/GoobyOS" target="_blank" class="btn btn-secondary">Source Code</a>
+    </div>
+</header>
+
+<h2 class="section-title">// SYSTEM_REQUIREMENTS</h2>
+<div class="table-container">
+    <table>
+        <tr><th>Component</th><th>Minimum Requirement</th></tr>
+        <tr><td>CPU</td><td>i386 Compatible (Intel/AMD)</td></tr>
+        <tr><td>Memory</td><td>Less than 1GB RAM (Kernel uses not too much)</td></tr>
+        <tr><td>Storage</td><td>IDE/SATA Primary Drive (ALIFS IS THERE!!!)</td></tr>
+        <tr><td>Firmware</td><td>BIOS / UEFI Legacy Support (UEFI WILL NOT WORK BUT ITS COMING SOON)</td></tr>
+    </table>
+</div>
+
+<section id="download">
+    <div class="iso-card">
+        <h2 style="margin-top:0">v10.26-ALPHA-RELEASE</h2>
+        <p style="color: var(--dim);">gubgubOS.iso</p>
+        <a href="https://github.com/softhumble/GoobyOS/releases/download/latest/gubgubOS.iso" class="btn btn-primary" download>DOWNLOAD .ISO</a>
+    </div>
+</section>
+
+<div class="contributors">
+    <p>Owner is softhumble</p>
+    <p>Only Contributer is justlinuxoyurself (made this website)</p>
+</div>
+
+<div id="term">
+    <button class="close-term" onclick="closeTerminal()">[ X ] Close</button>
+    <div id="term-content"></div>
+</div>
+
+<script>
+    window.isSimulated = false;
+    window.userFirmware = "";
+    window.userStorage = "";
+
+    function closeTerminal() {
+        document.getElementById('term').style.display = 'none';
+        document.getElementById('term-content').innerHTML = '';
+    }
+
+    function appendLog(text, type = "white") {
+        const content = document.getElementById('term-content');
+        const term = document.getElementById('term');
+        const div = document.createElement('div');
+        div.textContent = text;
+        
+        if (type === "green") div.className = "log-green";
+        else if (type === "red") div.className = "log-red";
+        else if (type === "dim") div.className = "log-dim";
+        else div.className = "log-white";
+        
+        content.appendChild(div);
+        term.scrollTop = term.scrollHeight;
+    }
+
+    function appendActionButtons(options, callbackName) {
+        const content = document.getElementById('term-content');
+        const term = document.getElementById('term');
+        const container = document.createElement('div');
+        container.className = 'term-btn-group';
+
+        options.forEach(opt => {
+            const btn = document.createElement('button');
+            btn.className = 'term-btn';
+            btn.textContent = opt.label;
+            btn.onclick = function() {
+                container.remove();
+                window[callbackName](opt.value);
+            };
+            container.appendChild(btn);
+        });
+
+        content.appendChild(container);
+        term.scrollTop = term.scrollHeight;
+    }
+
+    function checkCompatibility(simulatePC = false) {
+        window.isSimulated = simulatePC;
+        const term = document.getElementById('term');
+        term.style.display = 'block';
+        document.getElementById('term-content').innerHTML = '';
+
+        const userAgent = navigator.userAgent;
+        const cores = navigator.hardwareConcurrency || "Unknown";
+        let isX86 = true;
+
+        if (/iPhone|iPad|iPod|Android|ARM|Macintosh/i.test(userAgent) && !/Intel/i.test(userAgent)) {
+            isX86 = false;
+        }
+        if (simulatePC) isX86 = true;
+
+        appendLog("[GoobyOS Hardware Prober v1.8]", "white");
+        appendLog("Initializing client-side diagnostics...", "green");
+        
+        setTimeout(() => {
+            appendLog(`Probing CPU Cores: Found ${simulatePC ? 8 : cores} logical threads.`, "green");
+            appendLog(`User-Agent Frame: ${userAgent.substring(0, 50) + "..."}`, "dim");
+            appendLog("Verifying instruction set architecture...", "green");
+        }, 500);
+
+        setTimeout(() => {
+            if (!isX86) {
+                appendLog("[CRITICAL FAIL] Target platform utilizes ARM/Mobile architecture.", "red");
+                appendLog(">> STATUS: INCOMPATIBLE HARDWARE", "red");
+            } else {
+                appendLog("[SUCCESS] CPU Architecture matches i386 target framework.", "green");
+                appendLog("[SECURITY NOTICE] Browser sandbox restricts direct bus probing.", "white");
+                askFirmware();
+            }
+        }, 1200);
+    }
+
+    function askFirmware() {
+        appendLog("\n[PROMPT] Select target system firmware configuration:", "white");
+        appendActionButtons([
+            { label: "1. Legacy BIOS", value: "bios" },
+            { label: "2. Pure UEFI", value: "uefi" }
+        ], "handleFirmwareSelection");
+    }
+
+    window.handleFirmwareSelection = function(value) {
+        appendLog(`> Selected: ${value === 'bios' ? 'Legacy BIOS' : 'Pure UEFI'}`, "dim");
+        window.userFirmware = value;
+        setTimeout(askStorage, 400);
+    };
+
+    function askStorage() {
+        appendLog("\n[PROMPT] Select storage interface:", "white");
+        appendActionButtons([
+            { label: "1. IDE/SATA", value: "sata" },
+            { label: "2. NVMe", value: "nvme" }
+        ], "handleStorageSelection");
+    }
+
+    window.handleStorageSelection = function(value) {
+        appendLog(`> Selected: ${value === 'sata' ? 'IDE/SATA' : 'NVMe'}`, "dim");
+        window.userStorage = value;
+        setTimeout(printFinalVerdict, 600);
+    };
+
+    function printFinalVerdict() {
+        appendLog("---------------------------------------------------", "white");
+        appendLog("PROCESSING COMPATIBILITY MATRIX EVALUATION...", "green");
+        
+        if (window.isSimulated) {
+            appendLog("[SECURITY ALERT] Hardware data was manually overridden by user.", "red");
+        }
+
+        setTimeout(() => {
+            let passed = true;
+            if (window.userFirmware === "uefi") {
+                appendLog("[FAIL] Pure UEFI environment found. (UEFI NOT YET SUPPORTED)", "red");
+                passed = false;
+            } else {
+                appendLog("[PASS] Legacy BIOS map routing confirmed.", "green");
+            }
+            if (window.userStorage === "nvme") {
+                appendLog("[WARN] NVMe architecture discovered. ALIFS filesystem lacks PCIe indexing.", "red");
+                passed = false;
+            } else {
+                appendLog("[PASS] Primary IDE/SATA master target drive available.", "green");
+            }
+            appendLog("---------------------------------------------------", "white");
+            if (passed && !window.isSimulated) {
+                appendLog(">> STATUS: FULLY ELIGIBLE FOR AERO1EOS BOOT", "green");
+            } else if (passed && window.isSimulated) {
+                appendLog(">> STATUS: ELIGIBILITY UNKNOWN (SIMULATED)", "dim");
+            } else {
+                appendLog(">> STATUS: INCOMPATIBLE HARDWARE MATRIX", "red");
+            }
+        }, 1000);
+    }
+</script>
+</body>
+</html>
